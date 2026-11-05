@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цифровая крепость — словарь кибербезопасности</title>
+<meta name="description" content="Интерактивный словарь терминов кибербезопасности: карточки, примеры и квиз по теме аутентификации, авторизации, пентэста и культуре безопасности.">
+<style>
+  :root{
+    --ink:#0d1b2a;
+    --ink-soft:#33475b;
+    --bg:#eef3f8;
+    --panel:#ffffff;
+    --accent:#1b6ca8;
+    --accent-dark:#0f4c7a;
+    --amber:#f0a202;
+    --danger:#c0392b;
+    --good:#2e8b57;
+    --line:#d5e0ea;
+    --shadow:0 10px 30px rgba(13,27,42,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(27,108,168,.18), transparent 60%),
+      radial-gradient(900px 420px at -10% 10%, rgba(240,162,2,.12), transparent 55%),
+      var(--bg);
+    line-height:1.55;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header.hero{
+    padding:46px 0 34px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(135deg, #0d1b2a 0%, #123a5c 100%);
+    color:#fff;
+  }
+  .hero .kicker{
+    display:inline-block;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--amber);
+    margin-bottom:12px;
+  }
+  .hero h1{
+    margin:0 0 10px;
+    font-size:clamp(2rem, 5vw, 3.1rem);
+    line-height:1.12;
+    letter-spacing:-.01em;
+  }
+  .hero p.lede{
+    margin:0;
+    max-width:60ch;
+    color:#cfe1f0;
+    font-size:1.05rem;
+  }
+  .hero .motto{
+    margin-top:22px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16);
+    padding:14px 16px;
+    border-radius:12px;
+    color:#e9f2fa;
+    font-size:.98rem;
+    max-width:720px;
+  }
+  .hero .motto b{color:#ffd77a}
+
+  nav.stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:22px;
+  }
+  nav.stats button{
+    border:1px solid rgba(255,255,255,.35);
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    font:600 .92rem inherit;
+    padding:9px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  nav.stats button:hover{background:rgba(255,255,255,.2)}
+  nav.stats button.on{background:var(--amber);border-color:var(--amber);color:#1a1205}
+
+  main{padding:34px 0 60px}
+
+  section.block{display:none}
+  section.block.active{display:block}
+
+  .list-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .list-head h2{margin:0;font-size:1.5rem}
+  .list-head .count{color:var(--ink-soft);font-size:.92rem}
+
+  /* term cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:18px}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card .term{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .card h3{margin:0;font-size:1.18rem;line-height:1.25}
+  .card .en{color:#22608f;font-weight:600;font-size:.85rem}
+  .card .def{color:var(--ink-soft);flex:1}
+  .card .tag{
+    align-self:flex-start;
+    font-size:.74rem;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:#fff;
+    padding:3px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .tag--proc{background:#5b8fb9}
+  .tag--data{background:#b8860b}
+  .tag--risk{background:#b55a4a}
+  .card .example{
+    border-top:1px dashed var(--line);
+    padding-top:10px;
+    font-size:.9rem;
+    color:var(--ink-soft);
+  }
+  .card .example b{color:var(--accent-dark)}
+
+  /* quiz */
+  .quiz-shell{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:26px;
+    margin-top:18px;
+    max-width:760px;
+  }
+  .q-progress{
+    height:8px;border-radius:999px;background:#e2eaf2;overflow:hidden;margin-bottom:20px;
+  }
+  .q-progress span{display:block;height:100%;background:var(--accent);width:0%;transition:width .25s}
+  .q-ques{font-size:1.22rem;font-weight:600;margin:0 0 16px}
+  .opts{display:grid;gap:10px}
+  .opt{
+    border:1px solid var(--line);
+    background:#f7fafc;
+    border-radius:12px;
+    padding:13px 15px;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+    transition:border-color .12s, background .12s;
+  }
+  .opt:hover{border-color:var(--accent);background:#eef5fb}
+  .opt.correct{border-color:var(--good);background:#e8f6ee}
+  .opt.wrong{border-color:var(--danger);background:#fdecea}
+  .opt:disabled{cursor:default}
+  .q-result{margin-top:16px;font-size:1rem}
+  .q-result .good{color:var(--good);font-weight:600}
+  .q-result .bad{color:var(--danger);font-weight:600}
+  .btn{
+    border:none;border-radius:10px;cursor:pointer;font:600 .98rem inherit;
+    padding:12px 20px;
+    background:var(--accent);color:#fff;transition:background .15s;
+  }
+  .btn:hover{background:var(--accent-dark)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .q-end{text-align:center;padding:18px 0}
+  .q-end .score{font-size:1.6rem;font-weight:700;color:var(--accent-dark)}
+  .q-end p{color:var(--ink-soft)}
+
+  /* phrase section */
+  .phrase{
+    background:linear-gradient(135deg,#0f4c7a,#1b6ca8);
+    color:#eaf3fb;
+    border-radius:16px;
+    padding:28px;
+    margin-top:22px;
+    box-shadow:var(--shadow);
+  }
+  .phrase h2{margin:0 0 12px;color:#fff;font-size:1.4rem}
+  .phrase .q{font-size:1.06rem;line-height:1.6;color:#dcebf7}
+  .phrase .q b{color:#ffd77a}
+  .phrase ul.ideas{margin:16px 0 0;padding-left:0;list-style:none;display:grid;gap:12px}
+  .phrase ul.ideas li{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:.96rem;
+  }
+  .phrase ul.ideas .from{color:#ffd77a;font-weight:600}
+  .phrase ul.ideas .to{color:#ffffff}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:22px 0 40px;
+    color:var(--ink-soft);
+    font-size:.9rem;
+  }
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important}
+  }
+  @media (max-width:640px){
+    .hero{text-align:center}
+    .hero .motto{text-align:left}
+    .quiz-shell{padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Охотники за знаниями · словарь</span>
+    <h1>Цифровая крепость: словарь кибербезопасности</h1>
+    <p class="lede">Девять терминов, которые помогают говорить о безопасности точно. Переверните карточку — и слово обретёт смысл, пример и применимость.</p>
+    <div class="motto">
+      <span>Цель — <b>сформировать культуру безопасности на уровне речи</b>: вместо «пароль не подходит» говорить «проблема на этапе аутентификации, проверьте авторизацию токена».</span>
+    </div>
+    <nav class="stats" aria-label="Разделы">
+      <button class="on" id="nav-glossary" data-target="glossary" aria-controls="glossary">Словарь</button>
+      <button id="nav-quiz" data-target="quiz" aria-controls="quiz">Квиз</button>
+      <button id="nav-phrase" data-target="phrase" aria-controls="phrase">Культура речи</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="block active" id="glossary" aria-labelledby="glossary-title">
+      <div class="list-head">
+        <h2 id="glossary-title">Термины</h2>
+        <span class="count" id="term-count"></span>
+      </div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="block" id="quiz" aria-labelledby="quiz-title">
+      <div class="list-head">
+        <h2 id="quiz-title">Квиз</h2>
+      </div>
+      <div class="quiz-shell">
+        <div class="q-progress"><span id="q-bar"></span></div>
+        <p class="q-ques" id="q-ques"></p>
+        <div class="opts" id="q-opts"></div>
+        <div class="q-result" id="q-result"></div>
+        <button class="btn" id="q-next" type="button" style="margin-top:16px">Далее</button>
+      </div>
+    </section>
+
+    <section class="block" id="phrase" aria-labelledby="phrase-title">
+      <div class="phrase" id="phrase-content"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Цифровая крепость · учебный словарь кибербезопасности</span>
+    <span id="foot-count"></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var TERMS = [
+    {term:"Аутентификация", en:"authentication", tag:"proc", tagName:"доступ",
+      def:"Проверка, что пользователь — именно тот, за кого себя выдаёт. «Кто вы?» — подтверждение личности по паролю, коду или биометрии на входе.",
+      example:"На этапе аутентификации сервер проверяет ваш пароль и одноразовый код."},
+    {term:"Авторизация", en:"authorization", tag:"proc", tagName:"доступ",
+      def:"Решение о том, какие права и ресурсы доступны подтверждённому пользователю. «Что вам можно?» — доступ к данным и действиям.",
+      example:"После входа вы авторизованы читать свой профиль, но не менять чужой."},
+    {term:"Бэкап", en:"backup", tag:"proc", tagName:"сохранность",
+      def:"Резервное копирование данных на случай их потери, порчи или атаки — страховка, которая позволяет восстановиться.",
+      example:"Регулярный бэкап базы сохранил рабочие файлы после сбоя диска."},
+    {term:"Инкапсуляция", en:"encapsulation", tag:"data", tagName:"защита данных",
+      def:"Изоляция данных и скрытие внутренней реализации, чтобы извне был доступен только нужный интерфейс.",
+      example:"Инкапсуляция скрывает поля объекта и показывает лишь его методы."},
+    {term:"Логирование", en:"logging", tag:"proc", tagName:"наблюдение",
+      def:"Запись событий системы — журнал действий, по которому можно разобрать инцидент и найти причину сбоя.",
+      example:"Логирование входа в систему зафиксировало подозрительные попытки."},
+    {term:"Пентэст", en:"penetration test", tag:"risk", tagName:"контроль",
+      def:"Контролируемый тест на проникновение: белые хакеры ищут уязвимости в системе до того, как их найдут злоумышленники.",
+      example:"Пентэст выявил слабый пароль и открытый порт в конфигурации."},
+    {term:"Персональные данные", en:"personal data", tag:"data", tagName:"защита данных",
+      def:"Сведения, которые позволяют идентифицировать человека, — обрабатывать их нужно законно, с согласия и под защитой.",
+      example:"Обработка персональных данных клиента требует согласия и шифрования."},
+    {term:"Сертификат", en:"certificate (SSL/TLS)", tag:"data", tagName:"доверие",
+      def:"Цифровое удостоверение, шифрующее соединение SSL/TLS и подтверждающее подлинность сайта.",
+      example:"Сертификат сайта гарантирует зашифрованный канал и «замок» в браузере."},
+    {term:"Баг-репорт", en:"bug report", tag:"risk", tagName:"качество",
+      def:"Описание ошибки с шагами воспроизведения, ожидаемым и фактическим результатом, чтобы разработчик мог её найти и исправить.",
+      example:"Хороший баг-репорт содержит шаги, скриншот и описание ожидаемого поведения."}
+  ];
+
+  var GLOSSARY_PHRASES = {
+    auth: {from:"«пароль не подходит»", to:"«проблема на этапе аутентификации, проверьте авторизацию токена»", terms:["Аутентификация","Авторизация"]},
+    backup: {from:"«мы потеряли файлы»", to:"«восстановимся из бэкапа — данные на резервной копии»", terms:["Бэкап"]},
+    surv: {from:"«что-то зависло, никто не знает почему»", to:"«по логам видно: проследим событие на этапе логирования»", terms:["Логирование"]},
+    pentest: {from:"«мы проверили, всё вроде закрыто»", to:"«провели пентэст — систему протестировали на проникновение и закрыли найденные дыры»", terms:["Пентэст"]},
+    data: {from:"«перешлём базу целиком»", to:"«сначала инкапсулируем и защитим персональные данные, соединение по сертификату»", terms:["Инкапсуляция","Персональные данные","Сертификат"]},
+    bug: {from:"«опять сломано, исправь»", to:"«вот баг-репорт: шаги воспроизведения и ожидаемый результат»", terms:["Баг-репорт"]}
+  };
+
+  var QUIZ = [
+    {q:"Что проверяет система на этапе, когда пользователь «входит» по паролю?",
+      opts:["Аутентификацию","Авторизацию","Шифрование","Логирование"], ok:0,
+      why:"Аутентификация — подтверждение личности при входе."},
+    {q:"Что решает, какие права есть у уже подтверждённого пользователя?",
+      opts:["Аутентификация","Авторизация","Бэкап","Пентэст"], ok:1,
+      why:"Авторизация определяет доступ и права для проверенной личности."},
+    {q:"Какой термин описывает резервное копирование данных?",
+      opts:["Инкапсуляция","Логирование","Бэкап","Сертификат"], ok:2,
+      why:"Бэкап — резервная копия для восстановления."},
+    {q:"Как называется контролируемый тест системы на проникновение?",
+      opts:["Баг-репорт","Логирование","Аутентификация","Пентэст"], ok:3,
+      why:"Пентэст — тест на проникновение, поиск уязвимостей."},
+    {q:"Что шифрует соединение и подтверждает подлинность сайта?",
+      opts:["Сертификат SSL/TLS","Пароль","Бэкап","Логирование"], ok:0,
+      why:"Сертификат SSL/TLS обеспечивает защищённый канал."},
+    {q:"Как назвать документ с описанием ошибки и шагами её воспроизведения?",
+      opts:["Баг-репорт","Пентэст","Инкапсуляция","Логирование"], ok:0,
+      why:"Баг-репорт — описание бага с шагами воспроизведения."}
+  ];
+
+  var TAG_NAMES = {proc:"Доступ и действия", data:"Защита данных", risk:"Контроль и качество"};
+
+  var el = function(id){ return document.getElementById(id); };
+
+/* ---- render glossary ---- */
+  var cards = el("cards");
+  TERMS.forEach(function(t){
+    var card = document.createElement("article");
+    card.className = "card";
+    var head = document.createElement("div");
+    head.className = "term";
+    var h3 = document.createElement("h3");
+    h3.textContent = t.term;
+    var tag = document.createElement("span");
+    tag.className = "tag tag--" + t.tag;
+    tag.textContent = t.tagName;
+    head.appendChild(h3);
+    head.appendChild(tag);
+    var en = document.createElement("div");
+    var enSpan = document.createElement("span");
+    enSpan.className = "en";
+    enSpan.textContent = "(" + t.en + ")";
+    en.appendChild(enSpan);
+    var def = document.createElement("p");
+    def.className = "def";
+    def.textContent = t.def;
+    var example = document.createElement("p");
+    example.className = "example";
+    var b = document.createElement("b");
+    b.textContent = "Пример:";
+    example.appendChild(b);
+    example.appendChild(document.createTextNode(" " + t.example));
+    card.appendChild(head);
+    card.appendChild(en);
+    card.appendChild(def);
+    card.appendChild(example);
+    cards.appendChild(card);
+  });
+  el("term-count").textContent = "всего терминов: " + TERMS.length;
+  el("foot-count").textContent = TERMS.length + " терминов словаря";
+
+  /* ---- render phrase section ---- */
+  var phrase = el("phrase-content");
+  var list = '';
+  Object.keys(GLOSSARY_PHRASES).forEach(function(k){
+    var p = GLOSSARY_PHRASES[k];
+    var terms = p.terms.map(function(x){ return '<span class="from">'+x+'</span>'; }).join(", ");
+    list += '<li><div class="from">«'+p.from+'»</div>' +
+            '<div class="to">→ «'+p.to+'»</div>' +
+            '<div style="font-size:.85rem;color:#bcd6ea;margin-top:6px">термины: '+terms+'</div></li>';
+  });
+  phrase.innerHTML =
+    '<h2>Сформировать культуру безопасности на уровне речи</h2>' +
+    '<p class="q">Цель — говорить о безопасности точно и конструктивно: вместо «<b>пароль не подходит</b>» разработчик говорит «<b>проблема на этапе аутентификации, проверьте авторизацию токена</b>». Такой язык помогает быстрее находить настоящую причину инцидента.</p>' +
+    '<ul class="ideas">'+list+'</ul>';
+
+  /* ---- nav ---- */
+  var sections = {glossary:0, quiz:1, phrase:2};
+  var navBtns = document.querySelectorAll("nav.stats button");
+  navBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      navBtns.forEach(function(b){ b.classList.remove("on"); });
+      btn.classList.add("on");
+      Object.keys(sections).forEach(function(name){
+        el(name).classList.toggle("active", name === btn.getAttribute("data-target"));
+      });
+    });
+  });
+
+  /* ---- quiz ---- */
+  var qBar = el("q-bar"), qQues = el("q-ques"), qOpts = el("q-opts"),
+      qResult = el("q-result"), qNext = el("q-next");
+  var idx = 0, score = 0, answered = false, answeredOk = false;
+
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+
+  function loadQ(){
+    answered = false; answeredOk = false;
+    var item = QUIZ[idx];
+    qQues.textContent = item.q;
+    qResult.innerHTML = "";
+    qNext.disabled = true;
+    qNext.style.display = "none";
+    qOpts.innerHTML = "";
+    var order = item.opts.map(function(_,i){return i;});
+    shuffle(order);
+    order.forEach(function(oi){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.textContent = item.opts[oi];
+      b.addEventListener("click", function(){ answer(oi, b); });
+      qOpts.appendChild(b);
+    });
+    qBar.style.width = (idx / QUIZ.length * 100) + "%";
+  }
+
+  function answer(oi, btn){
+    if(answered) return;
+    answered = true;
+    var item = QUIZ[idx];
+    var buttons = qOpts.querySelectorAll(".opt");
+    buttons.forEach(function(b, i){ b.disabled = true; });
+    if(oi === item.ok){
+      score++;
+      answeredOk = true;
+      btn.classList.add("correct");
+      qResult.innerHTML = '<span class="good">Верно. </span>'+item.why;
+    }else{
+      btn.classList.add("wrong");
+      buttons[item.ok].classList.add("correct");
+      qResult.innerHTML = '<span class="bad">Не совсем. </span>'+item.why;
+    }
+    if(idx < QUIZ.length-1){ qNext.textContent = "Далее"; }
+    else{ qNext.textContent = "Показать результат"; }
+    qNext.style.display = "inline-block";
+    qNext.disabled = false;
+  }
+
+  qNext.addEventListener("click", function(){
+    if(idx < QUIZ.length-1){
+      idx++;
+      loadQ();
+    }else{
+      qBar.style.width = "100%";
+      qQues.style.display = "none";
+      qOpts.style.display = "none";
+      qResult.innerHTML = "";
+      qNext.style.display = "none";
+      var wrap = document.createElement("div");
+      wrap.className = "q-end";
+      wrap.innerHTML =
+        '<div class="score">'+score+' из '+QUIZ.length+'</div>' +
+        '<p>'+(score === QUIZ.length ? 'Отлично! Вы уверенно владеете словарём кибербезопасности.' :
+               score >= QUIZ.length/2 ? 'Хороший результат — стоит повторить несколько терминов.' :
+               'Стоит вернуться к словарю и закрепить термины.')+'</p>' +
+        '<button class="btn" type="button">Пройти ещё раз</button>';
+      wrap.querySelector("button").addEventListener("click", function(){
+        idx=0; score=0;
+        qQues.style.display="";
+        qOpts.style.display="";
+        qBar.style.width="0%";
+        loadQ();
+      });
+      qOpts.parentNode.appendChild(wrap);
+    }
+  });
+
+  loadQ();
+})();
+</script>
+</body>
+</html>
